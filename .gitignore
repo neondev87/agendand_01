@@ -1,0 +1,14 @@
+# Caché de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Archivos de caché o temporales
+*.log
+*.tmp
+*.swp
+*.swo
+
+# Variables de entorno
+.env
