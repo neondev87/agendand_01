@@ -1,14 +1,15 @@
-# Caché de Python
+.venv/
+venv/
+.env
 __pycache__/
-*.pyc
+*.py[cod]
 *.pyo
 *.pyd
-
-# Archivos de caché o temporales
 *.log
 *.tmp
-*.swp
-*.swo
-
-# Variables de entorno
-.env
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+.flet/
+.flet_build/
