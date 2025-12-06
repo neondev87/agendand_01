@@ -1,5 +1,5 @@
 # verify_db.py
-from config.db.database_mysql import health_check, fetch_all, ensure_schema
+from config.db import ensure_schema, health_check
 
 print("Verificando esquema y conexión...")
 try:
