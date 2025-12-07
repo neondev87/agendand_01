@@ -6,11 +6,31 @@ def calendar_view(page: ft.Page, user):
 
     content = ft.Column(
         [
-            ft.Text("Calendario", size=28, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)
+            ft.Text(
+                "Calendario",
+                size=28,
+                weight=ft.FontWeight.BOLD,
+                color="white"
+            ),
+
+            # Aquí irá el contenido real del calendario
         ],
-        alignment=ft.MainAxisAlignment.START
+        alignment=ft.MainAxisAlignment.START,
+        horizontal_alignment=ft.CrossAxisAlignment.START,
+        expand=True
     )
 
-    layout = ft.Row([nav, ft.Container(width=20), content], expand=True)
+    layout = ft.Row(
+        [
+            nav,
+            ft.Container(width=20),
+            content
+        ],
+        expand=True
+    )
 
-    return ft.View(route="/calendar", controls=[layout])
+    return ft.View(
+        route="/calendar",
+        controls=[layout],
+        bgcolor="#1E1E1E"
+    )

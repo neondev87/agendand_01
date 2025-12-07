@@ -1,87 +1,93 @@
 import flet as ft
-from ui.theme import primary_button, TEXT_COLOR
-from models.usser_model import UserModel
+
 
 def LoginView(page: ft.Page):
 
-    # Campos
-    username = ft.TextField(label="Usuario", width=300)
-    email = ft.TextField(label="Correo", visible=False, width=300)
-    password = ft.TextField(label="Contraseña", password=True, width=300)
-    msg = ft.Text(color="red")
+    # ------------------------------
+    # COLORES
+    # ------------------------------
+    BG = "#0F0F0F"
+    CARD = "#1A1A1A"
+    GREEN = "#00FF9C"
 
-    # Botones
-    btn_login = primary_button("Iniciar sesión", lambda e: login())
-    btn_register = primary_button("Registrarme", lambda e: show_register())
-    btn_confirm = primary_button("Confirmar", lambda e: register())
-    btn_cancel = primary_button("Cancelar", lambda e: cancel_register())
-
-    # Fila dinámica de botones
-    buttons_row = ft.Row(
-        controls=[btn_login, btn_register],
-        alignment=ft.MainAxisAlignment.CENTER,
-        spacing=10
+    # ------------------------------
+    # CAMPOS
+    # ------------------------------
+    username = ft.TextField(
+        label="Usuario",
+        color=GREEN,
+        border_color=GREEN,
+        focused_border_color=GREEN,
+        label_style=ft.TextStyle(color=GREEN),
+        bgcolor="#121212"
     )
 
-    # Funciones
-    def show_register():
-        email.visible = True
-        msg.value = ""
-        # Cambiar botones
-        buttons_row.controls = [btn_confirm, btn_cancel]
-        # Animación de aparición
-        for b in buttons_row.controls:
-            b.animate_scale = 0.5
-            b.scale = 1.0
-        page.update()
+    password = ft.TextField(
+        label="Contraseña",
+        password=True,
+        can_reveal_password=True,
+        color="white",
+        border_color="white24",
+        focused_border_color="white",
+        label_style=ft.TextStyle(color="white54"),
+        bgcolor="#121212"
+    )
 
-    def cancel_register():
-        email.visible = False
-        msg.value = ""
-        buttons_row.controls = [btn_login, btn_register]
-        page.update()
-
-    def register():
-        if not username.value or not email.value or not password.value:
-            msg.value = "Completa todos los campos"
-        else:
-            ok = UserModel.register(username.value, email.value, password.value)
-            msg.value = "Usuario registrado 😁" if ok else "Error registrando usuario"
-        page.update()
-
-    def login():
-        msg.value = ""
-        if not username.value or not password.value:
-            msg.value = "Completa usuario y contraseña"
-            page.update()
+    # ------------------------------
+    # FUNCIÓN LOGIN
+    # ------------------------------
+    def do_login(e):
+        if username.value.strip() == "":
             return
 
-        user = UserModel.login(username.value, password.value)
-        if user:
-            page.session.set("user", user)
-            page.go("/menu")
-        else:
-            msg.value = "Usuario o contraseña incorrectos"
-        page.update()
+        page.session.set("user", {"username": username.value})
+        page.go("/menu")
 
-    # Vista completa
+    # ------------------------------
+    # TARJETA CENTRAL
+    # ------------------------------
+    card = ft.Container(
+        width=450,
+        bgcolor=CARD,
+        padding=40,
+        border_radius=20,
+        content=ft.Column(
+            [
+                ft.Text("Bienvenido", size=34, color="white", weight=ft.FontWeight.BOLD),
+                ft.Text("Login", size=18, color="white60"),
+
+                ft.Divider(height=25, color="transparent"),
+
+                username,
+                password,
+
+                ft.Divider(height=20, color="transparent"),
+
+                ft.ElevatedButton(
+                    text="Entrar",
+                    on_click=do_login,
+                    width=420,
+                    height=48,
+                    bgcolor=GREEN,
+                    color="black"
+                ),
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=18
+        )
+    )
+
+    # ------------------------------
+    # VIEW FINAL
+    # ------------------------------
     return ft.View(
-        route="/",
-        bgcolor="#1E1E1E",
+        "/",
+        bgcolor=BG,
         controls=[
-            ft.Column(
-                [
-                    ft.Text("Agenda – Login", size=22, color=TEXT_COLOR),
-                    username,
-                    email,
-                    password,
-                    msg,
-                    buttons_row
-                ],
+            ft.Container(
                 expand=True,
-                alignment=ft.MainAxisAlignment.CENTER,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                spacing=15
+                alignment=ft.alignment.center,
+                content=card
             )
         ]
     )
