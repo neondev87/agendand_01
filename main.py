@@ -7,13 +7,13 @@ from views.calendar_view import calendar_view
 from views.tareas_view import tareas_view
 from views.login_view import LoginView
 from views.register_view import RegisterView
-from views.settings_view import SettingsView  
+from views.settings_view import SettingsView
 
 
 def main(page: ft.Page):
 
     # ------------------------------
-    # Tema general
+    # Tema general (controlado por ui.theme)
     # ------------------------------
     apply_theme(page)
 
@@ -31,9 +31,6 @@ def main(page: ft.Page):
         page.window.left = (page.screen.width - page.window.width) / 2
     except:
         pass
-
-    # Fondo negro real
-    page.bgcolor = "#0F0F0F"
 
     # ------------------------------
     # Router
@@ -72,7 +69,6 @@ def main(page: ft.Page):
                 return
             page.views.append(SettingsView(page, user))
 
-
         page.update()
 
     page.on_route_change = route_change
@@ -81,4 +77,5 @@ def main(page: ft.Page):
     page.go("/")
 
 
-ft.app(target=main)
+# IMPORTANTE: habilitar carpeta de assets
+ft.app(target=main, assets_dir="assets")

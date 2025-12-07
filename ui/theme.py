@@ -1,8 +1,7 @@
-# ui/theme.py
 import flet as ft
 
 # -----------------------------
-#  ESTADO GLOBAL DEL TEMA
+#  TEMA ACTIVO
 # -----------------------------
 CURRENT_THEME = "dark"
 
@@ -11,36 +10,33 @@ CURRENT_THEME = "dark"
 # -----------------------------
 THEMES = {
     "dark": {
-        # Fondos más suaves, no negro absoluto
         "APP_BG": "#121212",
-        "CARD_BG": "#1A1A1A",
-        "SURFACE_BG": "#222222",
-
-        # Botones
+        "CARD_BG": "#1F1F1F",
+        "SURFACE_BG": "#262626",
         "BTN_BG": "#2F2F2F",
         "BTN_BG_HOVER": "#3A3A3A",
-        "BTN_BORDER": "#4A4A4A",
-
-        # Textos
+        "BTN_BORDER": "#555555",
         "TEXT_COLOR": "#FFFFFF",
-        "TEXT_MUTED": "#D0D0D0",
+        "TEXT_MUTED": "#CCCCCC",
+        "ACCENT": "#00FF9C",
+        "DANGER": "#FF6666",
     },
     "light": {
-        "APP_BG": "#F6F6F6",
-        "CARD_BG": "#FFFFFF",
-        "SURFACE_BG": "#EEEEEE",
-
+        "APP_BG": "#FFFFFF",
+        "CARD_BG": "#EEEEEE",
+        "SURFACE_BG": "#F5F5F5",
         "BTN_BG": "#DDDDDD",
         "BTN_BG_HOVER": "#CCCCCC",
         "BTN_BORDER": "#BBBBBB",
-
         "TEXT_COLOR": "#000000",
-        "TEXT_MUTED": "#333333",
+        "TEXT_MUTED": "#444444",
+        "ACCENT": "#008F5A",
+        "DANGER": "#CC3333",
     }
 }
 
 # -----------------------------
-#  VARIABLES ACTIVAS
+#  VARIABLES GLOBALES
 # -----------------------------
 APP_BG = ""
 CARD_BG = ""
@@ -50,17 +46,20 @@ BTN_BG_HOVER = ""
 BTN_BORDER = ""
 TEXT_COLOR = ""
 TEXT_MUTED = ""
+ACCENT = ""
+DANGER = ""
 
 BORDER_RADIUS = 12
 ANIMATION_MS = 200
 
 
 # -----------------------------
-#  SINCRONIZAR VARIABLES
+#  SYNC
 # -----------------------------
 def _sync():
-    global APP_BG, CARD_BG, SURFACE_BG, BTN_BG, BTN_BG_HOVER
-    global BTN_BORDER, TEXT_COLOR, TEXT_MUTED
+    global APP_BG, CARD_BG, SURFACE_BG
+    global BTN_BG, BTN_BG_HOVER, BTN_BORDER
+    global TEXT_COLOR, TEXT_MUTED, ACCENT, DANGER
 
     t = THEMES[CURRENT_THEME]
     APP_BG = t["APP_BG"]
@@ -71,35 +70,38 @@ def _sync():
     BTN_BORDER = t["BTN_BORDER"]
     TEXT_COLOR = t["TEXT_COLOR"]
     TEXT_MUTED = t["TEXT_MUTED"]
+    ACCENT = t["ACCENT"]
+    DANGER = t["DANGER"]
 
 
 # -----------------------------
-#  APLICAR TEMA A PÁGINA
+#  APLICAR TEMA
 # -----------------------------
 def apply_theme(page: ft.Page):
     _sync()
     page.bgcolor = APP_BG
     page.padding = 30
-    page.fonts = {"inter": "https://rsms.me/inter/inter.ttf"}
-    page.theme = ft.Theme(font_family="inter")
-    page.session.set("theme_mode", CURRENT_THEME)
+    page.theme_mode = (
+        ft.ThemeMode.DARK if CURRENT_THEME == "dark" else ft.ThemeMode.LIGHT
+    )
     page.update()
 
 
 # -----------------------------
-#  TOGGLE DE TEMA
+#  TOGGLE
 # -----------------------------
 def toggle_app_theme(page: ft.Page):
     global CURRENT_THEME
     CURRENT_THEME = "light" if CURRENT_THEME == "dark" else "dark"
     apply_theme(page)
+    page.update()
 
 
 # -----------------------------
-#  HELPERS UI
+#  UI HELPERS
 # -----------------------------
 def title(text: str):
-    return ft.Text(text, size=26, weight=ft.FontWeight.BOLD, color=TEXT_COLOR)
+    return ft.Text(text, size=28, weight=ft.FontWeight.BOLD, color=TEXT_COLOR)
 
 
 def subtitle(text: str):
@@ -115,10 +117,8 @@ def primary_button(text: str, on_click=None, icon=None):
         color=TEXT_COLOR,
         height=46,
         style=ft.ButtonStyle(
-            shape=ft.RoundedRectangleBorder(radius=8),
-            padding=20,
-            overlay_color=BTN_BG_HOVER,
-            elevation=1
+            shape=ft.RoundedRectangleBorder(radius=10),
+            elevation=0
         )
     )
 
@@ -130,25 +130,17 @@ def input_field(label: str, password: bool = False):
         bgcolor=SURFACE_BG,
         color=TEXT_COLOR,
         border_color=BTN_BORDER,
-        focused_border_color=BTN_BG_HOVER,
+        focused_border_color=ACCENT,
         label_style=ft.TextStyle(color=TEXT_MUTED),
         text_style=ft.TextStyle(color=TEXT_COLOR),
-        border_radius=8
+        border_radius=10
     )
 
 
-# -----------------------------
-#  COMPONENTES BASE
-# -----------------------------
 def card(content):
     return ft.Container(
         content=content,
         bgcolor=CARD_BG,
-        padding=20,
-        border_radius=BORDER_RADIUS,
-        animate=ft.Animation(ANIMATION_MS, "easeInOut")
+        padding=24,
+        border_radius=BORDER_RADIUS
     )
-
-
-def primary_btn(text, on_click=None, icon=None):
-    return primary_button(text, on_click, icon)

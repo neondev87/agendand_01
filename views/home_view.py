@@ -8,8 +8,6 @@ def HomeView(page, user):
 
     content = ft.Column(
         [
-            ReturnButton(page, "/menu"),
-
             ft.Text(
                 "Bienvenido a tu Agenda",
                 size=28,

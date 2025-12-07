@@ -11,6 +11,16 @@ def LoginView(page: ft.Page):
     GREEN = "#00FF9C"
 
     # ------------------------------
+    # FUNCIÓN LOGIN
+    # ------------------------------
+    def do_login(e=None):
+        if username.value.strip() == "":
+            return
+
+        page.session.set("user", {"username": username.value})
+        page.go("/menu")
+
+    # ------------------------------
     # CAMPOS
     # ------------------------------
     username = ft.TextField(
@@ -19,7 +29,8 @@ def LoginView(page: ft.Page):
         border_color=GREEN,
         focused_border_color=GREEN,
         label_style=ft.TextStyle(color=GREEN),
-        bgcolor="#121212"
+        bgcolor="#121212",
+        on_submit=do_login   # ✅ ENTER funciona aquí
     )
 
     password = ft.TextField(
@@ -30,18 +41,9 @@ def LoginView(page: ft.Page):
         border_color="white24",
         focused_border_color="white",
         label_style=ft.TextStyle(color="white54"),
-        bgcolor="#121212"
+        bgcolor="#121212",
+        on_submit=do_login   # ✅ ENTER funciona aquí
     )
-
-    # ------------------------------
-    # FUNCIÓN LOGIN
-    # ------------------------------
-    def do_login(e):
-        if username.value.strip() == "":
-            return
-
-        page.session.set("user", {"username": username.value})
-        page.go("/menu")
 
     # ------------------------------
     # TARJETA CENTRAL

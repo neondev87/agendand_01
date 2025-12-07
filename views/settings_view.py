@@ -5,15 +5,42 @@ from ui import theme
 def SettingsView(page: ft.Page, user=None):
 
     # ==========================
-    # FUNCIONES
+    # TOGGLE THEME
     # ==========================
     def toggle_theme(e):
-        # Alterna dark/light en todo el sistema
         theme.toggle_app_theme(page)
+        actualizar_icono()
         page.update()
 
     # ==========================
-    # INFO USUARIO (SUPERIOR DERECHA)
+    # ICONO DINÁMICO
+    # ==========================
+    def actualizar_icono():
+        theme_icon.icon = (
+            ft.icons.LIGHT_MODE if theme.CURRENT_THEME == "dark"
+            else ft.icons.DARK_MODE
+        )
+
+    # ==========================
+    # BOTÓN RETURN (ICONO ASSETS)
+    # ==========================
+    def volver_menu(e):
+        page.go("/menu")
+
+    return_btn = ft.Container(
+        content=ft.Image(
+            src="assets/return.png",   # cambia el nombre si tu archivo es otro
+            width=28,
+            height=28
+        ),
+        on_click=volver_menu,
+        ink=True,
+        border_radius=10,
+        padding=6
+    )
+
+    # ==========================
+    # USER INFO
     # ==========================
     user_info = ft.Container(
         alignment=ft.alignment.top_right,
@@ -40,55 +67,69 @@ def SettingsView(page: ft.Page, user=None):
     )
 
     # ==========================
-    # TARJETA PRINCIPAL
+    # ICONO TEMA
+    # ==========================
+    theme_icon = ft.IconButton(
+        icon=ft.icons.LIGHT_MODE if theme.CURRENT_THEME == "dark" else ft.icons.DARK_MODE,
+        icon_color=theme.TEXT_COLOR,
+        tooltip="Cambiar tema",
+        on_click=toggle_theme
+    )
+
+    # ==========================
+    # TARJETA
     # ==========================
     settings_card = ft.Container(
         width=520,
         padding=30,
-        border_radius=16,
+        border_radius=20,
         bgcolor=theme.CARD_BG,
-        animate=ft.Animation(400, "easeOut"),
+        animate=ft.Animation(300, "easeOut"),
         shadow=ft.BoxShadow(
             blur_radius=20,
-            color="#00000044",
+            color="#00000033",
             offset=ft.Offset(0, 6)
         ),
         content=ft.Column(
             [
-                ft.Text(
-                    "Configuración",
-                    size=28,
-                    color=theme.TEXT_COLOR,
-                    weight=ft.FontWeight.BOLD
+                ft.Row(
+                    [
+                        return_btn,
+                        ft.Text(
+                            "Configuración",
+                            size=28,
+                            color=theme.TEXT_COLOR,
+                            weight=ft.FontWeight.BOLD
+                        ),
+                    ],
+                    alignment=ft.MainAxisAlignment.START,
+                    spacing=10
                 ),
 
                 ft.Divider(color=theme.BTN_BORDER),
 
                 ft.Text(
                     "Tema de la aplicación",
-                    color=theme.TEXT_MUTED,
-                    size=16
+                    size=16,
+                    color=theme.TEXT_MUTED
                 ),
 
-                ft.Container(
-                    margin=ft.margin.only(top=10),
-                    content=ft.IconButton(
-                        icon=ft.icons.BRIGHTNESS_6,
-                        icon_color=theme.TEXT_COLOR,
-                        tooltip="Cambiar tema",
-                        on_click=toggle_theme
-                    )
-                )
+                theme_icon
             ],
             spacing=20
         )
     )
 
     # ==========================
-    # VISTA FINAL
+    # ACTUALIZAR ICONO AL INICIO
+    # ==========================
+    actualizar_icono()
+
+    # ==========================
+    # VIEW FINAL
     # ==========================
     return ft.View(
-        "/settings",
+        route="/settings",
         bgcolor=theme.APP_BG,
         controls=[
             user_info,
