@@ -1,24 +1,52 @@
 import flet as ft
 
-
 def LoginView(page: ft.Page):
 
     # ------------------------------
-    # COLORES
+    # COLORES (DISEÑO FIJO)
     # ------------------------------
     BG = "#0F0F0F"
     CARD = "#1A1A1A"
     GREEN = "#00FF9C"
+    ERROR = "#FF5C5C"
+
+    # ------------------------------
+    # MENSAJE DE ERROR
+    # ------------------------------
+    msg = ft.Text("", size=13, color=ERROR)
 
     # ------------------------------
     # FUNCIÓN LOGIN
     # ------------------------------
     def do_login(e=None):
-        if username.value.strip() == "":
+        msg.value = ""
+
+        user = username.value.strip()
+        pwd = password.value.strip()
+
+        if not user or not pwd:
+            msg.value = "Completa todos los campos"
+            page.update()
             return
 
-        page.session.set("user", {"username": username.value})
-        page.go("/menu")
+        # 🔒 bloquear botón para evitar doble submit
+        login_btn.disabled = True
+        page.update()
+
+        try:
+            # aquí luego conectarás tu UserModel real
+            user_data = {"username": user}
+
+            page.session.set("user", user_data)
+            page.client_storage.set("user", user_data)  # 🔐 persistente
+
+            page.go("/menu")
+
+        except Exception:
+            msg.value = "Error al iniciar sesión"
+            login_btn.disabled = False
+            page.update()
+
 
     # ------------------------------
     # CAMPOS
@@ -30,7 +58,8 @@ def LoginView(page: ft.Page):
         focused_border_color=GREEN,
         label_style=ft.TextStyle(color=GREEN),
         bgcolor="#121212",
-        on_submit=do_login   # ✅ ENTER funciona aquí
+        autofocus=True,
+        on_submit=do_login
     )
 
     password = ft.TextField(
@@ -42,7 +71,19 @@ def LoginView(page: ft.Page):
         focused_border_color="white",
         label_style=ft.TextStyle(color="white54"),
         bgcolor="#121212",
-        on_submit=do_login   # ✅ ENTER funciona aquí
+        on_submit=do_login
+    )
+
+    # ------------------------------
+    # BOTÓN
+    # ------------------------------
+    login_btn = ft.ElevatedButton(
+        text="Entrar",
+        on_click=do_login,
+        width=420,
+        height=48,
+        bgcolor=GREEN,
+        color="black"
     )
 
     # ------------------------------
@@ -62,20 +103,14 @@ def LoginView(page: ft.Page):
 
                 username,
                 password,
+                msg,
 
-                ft.Divider(height=20, color="transparent"),
+                ft.Divider(height=10, color="transparent"),
 
-                ft.ElevatedButton(
-                    text="Entrar",
-                    on_click=do_login,
-                    width=420,
-                    height=48,
-                    bgcolor=GREEN,
-                    color="black"
-                ),
+                login_btn,
             ],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            spacing=18
+            spacing=16
         )
     )
 
@@ -83,7 +118,7 @@ def LoginView(page: ft.Page):
     # VIEW FINAL
     # ------------------------------
     return ft.View(
-        "/",
+        route="/",
         bgcolor=BG,
         controls=[
             ft.Container(

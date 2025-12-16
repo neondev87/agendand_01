@@ -1,5 +1,5 @@
 import flet as ft
-from ui.theme import TEXT_COLOR
+import ui.theme as theme
 from components.navbar import Navbar
 
 
@@ -12,10 +12,9 @@ def HomeView(page, user):
                 "Bienvenido a tu Agenda",
                 size=28,
                 weight=ft.FontWeight.BOLD,
-                color=TEXT_COLOR
+                color=theme.TEXT_COLOR
             ),
-
-            # Aquí podremos poner widgets del dashboard después
+            # widgets del dashboard después
         ],
         alignment=ft.MainAxisAlignment.START,
         horizontal_alignment=ft.CrossAxisAlignment.START,
@@ -33,6 +32,6 @@ def HomeView(page, user):
 
     return ft.View(
         route="/home",
-        bgcolor="#1E1E1E",
+        bgcolor=theme.APP_BG,
         controls=[layout]
     )

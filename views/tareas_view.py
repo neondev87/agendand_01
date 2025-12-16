@@ -1,5 +1,5 @@
 import flet as ft
-from ui import theme
+import ui.theme as theme
 from components.navbar import Navbar
 
 

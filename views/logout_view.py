@@ -1,5 +1,5 @@
 import flet as ft
-from ui.theme import TEXT_COLOR
+import ui.theme as theme
 
 def LogoutView(page):
     return ft.View(

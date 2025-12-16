@@ -1,192 +1,147 @@
 import flet as ft
 import ui.theme as theme
-from components.navbar import Navbar
 
 
 def SettingsView(page: ft.Page, user=None):
 
-    # Sincroniza tema
-    theme._sync()
-
-    # =====================================================
-    # CAMBIAR TEMA
-    # =====================================================
-    def toggle_theme(e):
-        theme.toggle_app_theme(page)
-        actualizar_icono()
-        page.update()
-
-    def actualizar_icono():
-        theme_icon.icon = (
-            ft.icons.LIGHT_MODE if theme.CURRENT_THEME == "dark"
-            else ft.icons.DARK_MODE
-        )
-
-    # =====================================================
-    # VOLVER AL MENÚ
-    # =====================================================
+    # -------------------------------
+    # HANDLERS
+    # -------------------------------
     def volver_menu(e):
         page.go("/menu")
 
-    return_btn = ft.Container(
-        bgcolor="#D32F2F",
-        padding=8,
-        border_radius=12,
-        ink=True,
-        on_click=volver_menu,
-        on_hover=lambda e: (
-            setattr(e.control, "bgcolor", "#B71C1C") if e.data == "true"
-            else setattr(e.control, "bgcolor", "#D32F2F"),
-            page.update()
-        ),
-        content=ft.Row(
-            [
-                ft.Icon(ft.icons.ARROW_BACK, color="white", size=20),
-                ft.Text("Regresar", color="white",
-                        size=14, weight=ft.FontWeight.BOLD)
-            ],
-            alignment=ft.MainAxisAlignment.CENTER,
-        )
-    )
-
-    # =====================================================
-    # USER INFO
-    # =====================================================
-    user_info = ft.Container(
-        alignment=ft.alignment.top_right,
-        padding=20,
-        content=ft.Row(
-            [
-                ft.Text(
-                    user["username"] if user else "Invitado",
-                    color=theme.TEXT_COLOR,
-                    size=14,
-                    weight=ft.FontWeight.BOLD
-                ),
-                ft.CircleAvatar(
-                    bgcolor=theme.SURFACE_BG,
-                    radius=16,
-                    content=ft.Text(
-                        user["username"][0].upper() if user else "?",
-                        color=theme.TEXT_COLOR
-                    )
-                )
-            ],
-            spacing=10
-        )
-    )
-
-    # =====================================================
-    # ICONO DE TEMA
-    # =====================================================
-    theme_icon = ft.IconButton(
-        icon=ft.icons.LIGHT_MODE if theme.CURRENT_THEME == "dark" else ft.icons.DARK_MODE,
-        icon_color=theme.TEXT_COLOR,
-        tooltip="Cambiar tema",
-        on_click=toggle_theme
-    )
-
-    # =====================================================
-    # BOTÓN CERRAR SESIÓN
-    # =====================================================
     def cerrar_sesion(e):
         page.session.clear()
-        page.update()
+        page.client_storage.remove("user")
         page.go("/")
 
+    def toggle_theme(e):
+        theme.toggle_theme(page)
+        page.update()
+
+    # -------------------------------
+    # BOTÓN REGRESAR
+    # -------------------------------
+    return_btn = ft.TextButton(
+        content=ft.Row(
+            spacing=6,
+            controls=[
+                ft.Icon(ft.icons.ARROW_BACK, size=18, color=theme.TEXT_MUTED),
+                ft.Text("Regresar", size=13, color=theme.TEXT_COLOR),
+            ],
+        ),
+        on_click=volver_menu,
+    )
+
+    # -------------------------------
+    # USER INFO
+    # -------------------------------
+    user_info = ft.Row(
+        spacing=10,
+        controls=[
+            ft.Text(
+                user["username"] if user else "Invitado",
+                size=13,
+                color=theme.TEXT_COLOR,
+                weight=ft.FontWeight.W_600,
+            ),
+            ft.CircleAvatar(
+                radius=16,
+                bgcolor=theme.SURFACE_BG,
+                content=ft.Text(
+                    user["username"][0].upper() if user else "?",
+                    color=theme.TEXT_COLOR,
+                ),
+            ),
+        ],
+    )
+
+    # -------------------------------
+    # LOGOUT (ROJO FIJO)
+    # -------------------------------
     logout_btn = ft.Container(
-        bgcolor="#C62828",
-        padding=12,
-        border_radius=12,
+        height=48,
+        border_radius=20,
+        alignment=ft.alignment.center,
+        bgcolor="#8B2C2C",  # 🔥 ROJO ELEGANTE FIJO
         ink=True,
         on_click=cerrar_sesion,
-        on_hover=lambda e: (
-            setattr(e.control, "bgcolor", "#8E0000") if e.data == "true"
-            else setattr(e.control, "bgcolor", "#C62828"),
-            page.update()
-        ),
         content=ft.Row(
-            [
-                ft.Icon(ft.icons.LOGOUT, color="white", size=20),
-                ft.Text("Cerrar sesión", color="white", size=14),
-            ],
+            alignment=ft.MainAxisAlignment.CENTER,
             spacing=8,
-            alignment=ft.MainAxisAlignment.CENTER
-        )
+            controls=[
+                ft.Icon(ft.icons.LOGOUT, color="white", size=18),
+                ft.Text(
+                    "Cerrar sesión",
+                    color="white",
+                    size=14,
+                    weight=ft.FontWeight.W_600,
+                ),
+            ],
+        ),
     )
 
-    # =====================================================
-    # TARJETA DE CONFIGURACIÓN
-    # =====================================================
-    settings_card = ft.Container(
-        width=520,
-        padding=30,
-        border_radius=20,
-        bgcolor=theme.CARD_BG,
-        shadow=ft.BoxShadow(
-            blur_radius=20,
-            color="#00000033",
-            offset=ft.Offset(0, 6)
-        ),
+    # -------------------------------
+    # MODAL CARD ÚNICO (GRIS CLARO)
+    # -------------------------------
+    settings_modal = ft.Container(
+        width=560,
+        padding=40,
+        border_radius=32,
+        bgcolor="#323846",  # 🔥 GRIS CLARO PREMIUM
         content=ft.Column(
-            [
+            spacing=26,
+            controls=[
                 ft.Row(
-                    [
-                        return_btn,
-                        ft.Text(
-                            "Configuración",
-                            size=28,
-                            color=theme.TEXT_COLOR,
-                            weight=ft.FontWeight.BOLD
-                        ),
-                    ],
-                    alignment=ft.MainAxisAlignment.START,
+                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                    controls=[return_btn, user_info],
                 ),
 
-                ft.Divider(color=theme.BTN_BORDER),
+                ft.Text(
+                    "Configuración",
+                    size=28,
+                    weight=ft.FontWeight.W_700,
+                    color=theme.TEXT_COLOR,
+                ),
 
-                ft.Text("Tema de la aplicación",
-                        color=theme.TEXT_MUTED, size=16),
-                theme_icon,
+                ft.Text(
+                    "Preferencias de la aplicación",
+                    size=14,
+                    color=theme.TEXT_MUTED,
+                ),
 
-                ft.Divider(color=theme.BTN_BORDER),
+                ft.Container(
+                    padding=16,
+                    border_radius=18,
+                    bgcolor=theme.SURFACE_BG,
+                    content=ft.Row(
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        controls=[
+                            ft.Text("Modo oscuro", size=15, color=theme.TEXT_COLOR),
+                            ft.Switch(
+                                value=theme.CURRENT_THEME == "dark",
+                                on_change=toggle_theme,
+                            ),
+                        ],
+                    ),
+                ),
 
-                ft.Text("Cuenta", color=theme.TEXT_MUTED, size=16),
-                logout_btn
+                logout_btn,
             ],
-            spacing=20
-        )
+        ),
     )
 
-    actualizar_icono()
-
-    # =====================================================
-    # VISTA FINAL – navbar + contenido centrado sin bugs
-    # =====================================================
-    return ft.View(
-        route="/settings",
-        bgcolor=theme.APP_BG,
+    # -------------------------------
+    # FINAL
+    # -------------------------------
+    return ft.Stack(
+        expand=True,
         controls=[
-            ft.Row(
-                [
-                    Navbar(page),
-                    ft.Container(
-                        expand=True,
-                        bgcolor=theme.APP_BG,   # ← FIX FINAL
-                        content=ft.Column(
-                            [
-                                user_info,
-                                ft.Container(
-                                    expand=True,
-                                    alignment=ft.alignment.center,
-                                    content=settings_card
-                                )
-                            ],
-                            expand=True
-                        )
-                    )
-                ],
-                expand=True
-            )
-        ]
+            ft.Container(expand=True, bgcolor=theme.APP_BG),
+            ft.Container(
+                expand=True,
+                alignment=ft.alignment.center,
+                content=settings_modal,
+            ),
+        ],
     )

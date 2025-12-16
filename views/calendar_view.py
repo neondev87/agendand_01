@@ -1,17 +1,14 @@
 import flet as ft
+import ui.theme as theme
 from components.navbar import Navbar
+
 
 def calendar_view(page: ft.Page, user):
     nav = Navbar(page)
 
     content = ft.Column(
         [
-            ft.Text(
-                "Calendario",
-                size=28,
-                weight=ft.FontWeight.BOLD,
-                color="white"
-            ),
+            theme.title("Calendario"),
 
             # Aquí irá el contenido real del calendario
         ],
@@ -31,6 +28,6 @@ def calendar_view(page: ft.Page, user):
 
     return ft.View(
         route="/calendar",
-        controls=[layout],
-        bgcolor="#1E1E1E"
+        bgcolor=theme.APP_BG,
+        controls=[layout]
     )

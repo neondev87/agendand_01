@@ -1,47 +1,108 @@
 import flet as ft
-from ui.theme import SURFACE_BG, TEXT_COLOR
+import ui.theme as theme
 
 
-def Navbar(page):
-    return ft.Container(
-        width=80,
-        bgcolor=SURFACE_BG,  # ✅ usa el color centralizado
-        padding=10,
-        content=ft.Column(
-            controls=[
-                ft.Icon(ft.icons.MENU, color=TEXT_COLOR, size=30),
-                ft.Divider(height=20, color="white24"),
+def Navbar(page: ft.Page):
 
-                ft.IconButton(
-                    icon=ft.icons.HOME,
-                    icon_color=TEXT_COLOR,
-                    tooltip="Inicio",
-                    on_click=lambda e: page.go("/menu")
-                ),
+    # =====================================
+    # ESTADO GLOBAL (SESSION)
+    # =====================================
+    if page.session.get("nav_collapsed") is None:
+        page.session.set("nav_collapsed", False)
 
-                ft.IconButton(
-                    icon=ft.icons.CALENDAR_MONTH,
-                    icon_color=TEXT_COLOR,
-                    tooltip="Calendario",
-                    on_click=lambda e: page.go("/calendar")
-                ),
-
-                ft.IconButton(
-                    icon=ft.icons.CHECKLIST,
-                    icon_color=TEXT_COLOR,
-                    tooltip="Tareas",
-                    on_click=lambda e: page.go("/tareas")
-                ),
-
-                ft.IconButton(
-                    icon=ft.icons.SETTINGS,
-                    icon_color=TEXT_COLOR,
-                    tooltip="Configuración",
-                    on_click=lambda e: page.go("/settings")
-                ),
-            ],
-            alignment=ft.MainAxisAlignment.START,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            spacing=15
-        )
+    nav = ft.Container(
+        padding=14,
+        bgcolor=theme.SURFACE_BG,
+        border_radius=16,
+        animate=ft.Animation(250, ft.AnimationCurve.EASE_OUT),
     )
+
+    # =====================================
+    # HELPERS
+    # =====================================
+    def safe_go(route: str):
+        if page.route != route:
+            page.go(route)
+
+    def toggle_nav(e):
+        current = page.session.get("nav_collapsed")
+        page.session.set("nav_collapsed", not current)
+        render()
+        page.update()
+
+    def nav_icon(icon, route, tooltip):
+        active = page.route == route
+
+        return ft.Container(
+            width=44,
+            height=44,
+            border_radius=12,
+            alignment=ft.alignment.center,
+            ink=True,
+            on_click=lambda e: safe_go(route),
+            content=ft.Icon(
+                icon,
+                size=22,
+                color=theme.TEXT_COLOR if active else theme.ICON_COLOR,
+            ),
+            tooltip=tooltip,
+        )
+
+    # =====================================
+    # RENDER DINÁMICO
+    # =====================================
+    def render():
+        collapsed = page.session.get("nav_collapsed")
+
+        nav.width = 56 if collapsed else 80
+
+        if collapsed:
+            nav.content = ft.Column(
+                spacing=18,
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                controls=[
+                    ft.Container(
+                        width=44,
+                        height=44,
+                        border_radius=12,
+                        alignment=ft.alignment.center,
+                        ink=True,
+                        on_click=toggle_nav,
+                        content=ft.Icon(
+                            ft.icons.CHEVRON_RIGHT,
+                            size=22,
+                            color=theme.TEXT_MUTED,
+                        ),
+                    ),
+                ],
+            )
+        else:
+            nav.content = ft.Column(
+                spacing=18,
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                controls=[
+                    ft.Container(
+                        width=44,
+                        height=44,
+                        border_radius=12,
+                        alignment=ft.alignment.center,
+                        ink=True,
+                        on_click=toggle_nav,
+                        content=ft.Icon(
+                            ft.icons.MENU,
+                            size=22,
+                            color=theme.TEXT_COLOR,
+                        ),
+                    ),
+
+                    nav_icon(ft.icons.HOME, "/menu", "Inicio"),
+                    nav_icon(ft.icons.CALENDAR_MONTH, "/calendar", "Calendario"),
+                    nav_icon(ft.icons.CHECKLIST, "/tareas", "Tareas"),
+                    nav_icon(ft.icons.SETTINGS, "/settings", "Configuración"),
+                ],
+            )
+
+    # render inicial
+    render()
+
+    return nav

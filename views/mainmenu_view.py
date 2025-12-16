@@ -1,37 +1,39 @@
 import flet as ft
+from ui import theme
 from components.navbar import Navbar
+
 
 
 def mainmenu_view(page, user):
 
-    # --------------------------
-    # TARJETA DE PERFIL (estilo Steam simple)
-    # --------------------------
     profile_card = ft.Container(
-        bgcolor="#2A2A2A",
+        bgcolor=theme.CARD_BG,
         padding=20,
-        border_radius=12,
+        border_radius=theme.BORDER_RADIUS,
         width=500,
         content=ft.Column(
-            controls=[
+            [
                 ft.Row(
-                    controls=[
+                    [
                         ft.CircleAvatar(
-                            bgcolor="#444444",
+                            bgcolor=theme.SURFACE_BG,
                             radius=40,
-                            content=ft.Icon(ft.icons.PERSON, color="white"),
+                            content=ft.Icon(
+                                ft.icons.PERSON,
+                                color=theme.ICON_COLOR
+                            ),
                         ),
                         ft.Column(
-                            controls=[
+                            [
                                 ft.Text(
                                     user.get("username", "Usuario"),
-                                    color="white",
+                                    color=theme.TEXT_COLOR,
                                     size=24,
                                     weight=ft.FontWeight.BOLD
                                 ),
                                 ft.Text(
                                     "Perfil básico (pronto estilo Steam)",
-                                    color="#CCCCCC",
+                                    color=theme.TEXT_MUTED,
                                     size=12
                                 ),
                             ],
@@ -45,35 +47,28 @@ def mainmenu_view(page, user):
         )
     )
 
-    # --------------------------
-    # VISTA PRINCIPAL
-    # --------------------------
     return ft.View(
         route="/menu",
-        bgcolor="#1E1E1E",
+        bgcolor=theme.APP_BG,
         controls=[
             ft.Row(
-                controls=[
-                    # NAVBAR
+                [
                     Navbar(page),
 
-                    # CONTENIDO PRINCIPAL
                     ft.Container(
                         expand=True,
                         padding=20,
                         content=ft.Column(
-                            controls=[
+                            [
                                 ft.Text(
                                     "Menú Principal",
                                     size=28,
-                                    color="white",
+                                    color=theme.TEXT_COLOR,
                                     weight=ft.FontWeight.BOLD
                                 ),
-                                ft.Divider(height=20, color="white24"),
+                                ft.Divider(height=20, color=theme.DIVIDER),
                                 profile_card
                             ],
-                            alignment=ft.MainAxisAlignment.START,
-                            horizontal_alignment=ft.CrossAxisAlignment.START,
                             spacing=25,
                             expand=True
                         ),
